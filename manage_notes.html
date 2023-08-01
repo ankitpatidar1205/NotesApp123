@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Notes App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md bg-dark navbar-blue">
+    <a class="navbar-brand" href="#">Admin Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="add_notes.html">Add Notes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="manage_notes.html">Manage Notes</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+
+  <div class="container">
+    <div class="row" id="data">
+
+
+    </div>
+
+    <!-- modal box code  -->
+    <div class="modal bg-dark" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Edit Notes</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <form action="" method="post" name="frm" onsubmit="updateNotes(event)">
+              <div class="form-group">
+                <label for="">Category</label>
+                <input type="text" id="category" class="form-control" name="category">
+              </div>
+              <div class="form-group">
+                <label for="">Title</label>
+                <input type="text" name="title" id="title" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="">Description</label>
+                <textarea name="description" id="description" class="form-control"></textarea>
+              </div>
+              <div class="form-group">
+                <input type="submit" name="submit" class="btn btn-info" value="Update Notes">
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    function getNotes() {
+      let nData = localStorage.getItem("notesdata");
+      if (nData != null) {
+        nArray = JSON.parse(nData);
+      }
+      else {
+        nArray = [];
+      }
+      console.log(nArray);
+      let str = "";
+      nArray.forEach((items, index) => {
+        str = str + `<div  class='col-sm-4 mt-3'>
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">${items.title}</h4>
+                <p class="card-text">${items.description}</p>
+                <p class="card-text">Category : ${items.category}</p>
+                <button class='btn btn-danger' onclick='deleteNotes(${index})'>Delete</button>
+                <button class='btn btn-info ml-2' data-toggle="modal" data-target="#myModal" onclick='editNotes(${index})'>Edit</button>
+              </div> 
+              </div>
+            </div>`
+      });
+      // console.log(str);
+      document.getElementById("data").innerHTML = str;
+    }
+    getNotes();
+
+    //delete notes
+    function deleteNotes(nid) {
+      // console.log(nid);
+      let delData = localStorage.getItem("notesdata");
+      if (delData != null) {
+        delArr = JSON.parse(delData);
+      }
+      else {
+        delArr = [];
+      }
+      let newArr = delArr.filter((items, index) => {
+        return nid != index;
+      });
+      //console.log(newArr);
+      localStorage.setItem("notesdata", JSON.stringify(newArr));
+      getNotes();
+    }
+    // edit notes code 
+    let sid = "";
+    function editNotes(editId) {
+      sid = editId;
+      //console.log(editId);
+      let editData = localStorage.getItem("notesdata");
+      if (editData != null) {
+        editArr = JSON.parse(editData);
+      }
+      else {
+        editArr = [];
+      }
+      let newEditArr = editArr.filter((items, index) => {
+        return editId == index;
+      });
+      //console.log(newEditArr);
+      document.getElementById("category").value = newEditArr[0].category
+      document.getElementById("title").value = newEditArr[0].title
+      document.getElementById("description").value = newEditArr[0].description
+
+    }
+    // update notes 
+    function updateNotes(event) {
+      event.preventDefault();
+      //console.log(sid);
+      let updateData = localStorage.getItem("notesdata");
+      if (updateData != null) {
+        updateArr = JSON.parse(updateData);
+      }
+      else {
+        updateArr = [];
+      }
+      updateArr[sid].category = document.getElementById("category").value;
+      updateArr[sid].title = document.getElementById("title").value;
+      updateArr[sid].description = document.getElementById("description").value;
+      localStorage.setItem("notesdata", JSON.stringify(updateArr));
+      frm.reset();
+      getNotes();
+    }
+  </script>
+</body>
+
+</html>
+
+
+
+<!-- Edit code 
+
+1. get the index from click a edit button 
+2. open the model box when user click on the edit button 
+3. form add into the modal box
+4. filter new array
+5. set data into the model input fileds ..  
+6.  
+
+-->
